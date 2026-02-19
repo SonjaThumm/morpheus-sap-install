@@ -126,7 +126,7 @@ sap_hana_install_recreate_tenant_database: false
 # It will also recursively relabel directories and files in `/hana` before the installation starts and in all other directories
 # specified in 'sap_hana_install_directories' after the installation has finished.
 # If this not desired, set the following variable to `false`.
-sap_hana_install_configure_selinux: true
+sap_hana_install_configure_selinux: false
 
 ################
 # Parameters for hdblcm:
