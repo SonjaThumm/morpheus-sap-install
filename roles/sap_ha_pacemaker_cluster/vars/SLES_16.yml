@@ -1,0 +1,73 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Variables specific to following versions:
+# - SUSE Linux Enterprise Server for SAP Applications 16
+# - SUSE Linux Enterprise Server 16
+
+# Dictionary with additional cluster packages for specific scenarios
+# All packages are included in patterns
+__sap_ha_pacemaker_cluster_sap_extra_packages_dict:
+  minimal: []
+  hana_scaleout: []
+  hana_scaleup: []
+  hana_angi: []
+  nwas: []
+
+# Dictionary with zypper patterns for specific scenarios
+__sap_ha_pacemaker_cluster_sap_zypper_patterns_dict:
+  minimal:
+    - ha_sles
+  hana_scaleout:
+    - sles_sap_HADB
+  hana_scaleup:
+    - sles_sap_HADB
+  nwas:
+    - sles_sap_HAAPP
+
+# Package list was simplified because of new patterns below:
+
+# patterns-sap-HADB contains:
+# - patterns-sles_sap_DB
+# - patterns-ha-ha_sles
+# - SAPHanaSR-angi
+# - ClusterTools2
+# - supportutils-plugin-ha-sap
+# - socat
+
+# patterns-sap-HAAPP contains:
+# - patterns-sles_sap_APP
+# - patterns-ha-ha_sles
+# - sapstartsrv-resource-agents
+# - sap-suse-cluster-connector
+# - ClusterTools2
+# - supportutils-plugin-ha-sap
+# - socat
+
+# Package 'fence-agents' is not present on SLES 16 and all agents have dedicated packages.
+# Alternatively package 'fence-agents-all' is available with all agents included.
+__sap_ha_pacemaker_cluster_fence_agent_packages_minimal: []
+
+# Dictionary with fence packages for each platform
+# fence-agents are defined in __sap_ha_pacemaker_cluster_fence_agent_packages_minimal already.
+__sap_ha_pacemaker_cluster_fence_agent_packages_dict:
+  cloud_aws_ec2_vs:
+    - fence-agents-aws
+  cloud_gcp_ce_vm:
+    - fence-agents-gce
+  cloud_ibmcloud_powervs:
+    - fence-agents-ibm-powervs
+  cloud_ibmcloud_vs:
+    - fence-agents-ibm-vpc
+  cloud_msazure_vm:
+    - fence-agents-azure-arm
+  hyp_ibmpower_vm:
+    - fence-agents-lpar
+
+# Default corosync transport options
+__sap_ha_pacemaker_cluster_corosync_transport_default:
+  type: knet
+  crypto:
+    - name: crypto_hash
+      value: sha256
+    - name: crypto_cipher
+      value: aes256

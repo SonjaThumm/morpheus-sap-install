@@ -184,6 +184,14 @@
     - sap_swpm_generate_inifile
     - sap_swpm_sapinst_commandline
 
+- name: SAP SWPM Pre Install - Assert 'sap_swpm_install_saphostagent' is a boolean if it is defined
+  ansible.builtin.assert:
+    that: sap_swpm_install_saphostagent is boolean
+    fail_msg: "FAIL: 'sap_swpm_install_saphostagent' is not a boolean!"
+    success_msg: "PASS: 'sap_swpm_install_saphostagent' is a boolean."
+  when:
+    - sap_swpm_install_saphostagent is defined
+
 - name: SAP SWPM Pre Install - Assert the hostname compliance with SAP note 611361
   ansible.builtin.include_tasks:
     file: pre_install/assert_hostname.yml

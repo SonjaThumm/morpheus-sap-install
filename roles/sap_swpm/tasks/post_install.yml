@@ -54,7 +54,8 @@
   become: true
   become_user: "{{ sap_swpm_sid | lower }}adm"
   when:
-    - sap_swpm_install_saphostagent is defined and sap_swpm_install_saphostagent
+    - sap_swpm_install_saphostagent is defined
+    - sap_swpm_install_saphostagent
     - __sap_swpm_post_install_register_hdbuserstore_exists.stat.exists
   register: __sap_swpm_post_install_register_hdbuserstore_connection
   changed_when: __sap_swpm_post_install_register_hdbuserstore_connection is succeeded

@@ -1168,7 +1168,7 @@ ERROR:FAIL: Variable 'sap_swpm_ascs_instance_nr' is empty!
 # - Java Gateway (GW) and
 # - Java Internal Web Dispatcher (WD).
 ###################################################################
-{% if sap_swpm_java_scs_instance_hostname | string | trim | length > 0 %}
+{% if sap_swpm_java_scs_instance_hostname | trim | length > 0 %}
 NW_CI_Instance.scsVirtualHostname = {{ sap_swpm_java_scs_instance_hostname }}
 {% else %}
 ERROR:FAIL: Variable 'sap_swpm_java_scs_instance_hostname' is empty!
@@ -1178,7 +1178,7 @@ NW_CI_Instance.scsInstanceNumber = {{ sap_swpm_java_scs_instance_nr }}
 {% else %}
 ERROR:FAIL: Variable 'sap_swpm_java_scs_instance_nr' is empty!
 {% endif %}
-{% if sap_swpm_java_scs_instance_hostname | string | trim | length > 0 %}
+{% if sap_swpm_java_scs_instance_hostname | trim | length > 0 %}
 NW_SCS_Instance.scsVirtualHostname = {{ sap_swpm_java_scs_instance_hostname }}
 {% else %}
 ERROR:FAIL: Variable 'sap_swpm_java_scs_instance_hostname' is empty!
@@ -1255,7 +1255,7 @@ NW_DI_Instance.virtualHostname = {{ sap_swpm_aas_instance_hostname }}
 ###################################################################
 # BEGIN section nw_config_ers                                     #
 #                                                                 #
-{% if sap_swpm_ers_instance_hostname | string | trim | length > 0 %}
+{% if sap_swpm_ers_instance_hostname | trim | length > 0 %}
 nw_instance_ers.ersVirtualHostname = {{ sap_swpm_ers_instance_hostname }}
 {% else %}
 ERROR:FAIL: Variable 'sap_swpm_ers_instance_hostname' is empty!
@@ -1328,7 +1328,7 @@ ERROR:      Inifile Parameter: 'UmeConfiguration.sapjsfPassword'
 {% endif %}
 {% endif %}
 UmeConfiguration.umeClient = {{ sap_swpm_ume_client_nr }}
-{% if sap_swpm_pas_instance_hostname | string | trim | length > 0 %}
+{% if sap_swpm_pas_instance_hostname | trim | length > 0 %}
 UmeConfiguration.umeHost = {{ sap_swpm_pas_instance_hostname }}
 {% else %}
 ERROR:FAIL: Variable 'sap_swpm_pas_instance_hostname' is empty!

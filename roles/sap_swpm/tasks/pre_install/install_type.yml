@@ -84,9 +84,9 @@
 
 - name: SAP SWPM Pre Install - Assert that necessary variable for HA is defined
   ansible.builtin.assert:
-    that: sap_swpm_virtual_hostname is defined and sap_swpm_virtual_hostname
-    fail_msg: "FAIL: {{ sap_swpm_virtual_hostname }} is not defined!"
-    success_msg: "PASS: The variable 'sap_swpm_virtual_hostname' is defined, as '{{ sap_swpm_virtual_hostname }}'."
+    that: sap_swpm_virtual_hostname is defined and sap_swpm_virtual_hostname | length > 0
+    fail_msg: "FAIL: 'sap_swpm_virtual_hostname' is not defined or is defined with an empty string!"
+    success_msg: "PASS: 'sap_swpm_virtual_hostname' is defined, as '{{ sap_swpm_virtual_hostname }}'."
   when:
     - sap_swpm_swpm_installation_type is search('ha')
 

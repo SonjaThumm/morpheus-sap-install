@@ -8,34 +8,32 @@ The roles and playbooks in this repository were tested for the use in HPE Morphe
 The roles and playbooks from https://github.com/sap-linuxlab/community.sap_install were used and slightly modified. Only tested roles and playbooks are part of this repository.
 
 Included roles cover range of tasks:
-- Installation of SAP Database
-- Installation of SAP Products, like SAP S4HANA and SAP BW4HANA.
+
+- Installation of SAP HANA Database
+- Installation of SAP Products, like SAP S4HANA, SAP BW4HANA and others. Only SAP S/4HANA and SAP BW/4HANA have been tested for integration into HPE Morpheus Enterprise.
+
 
 ## Requirements
-
 ### Control Nodes
 Operating system:
-- Any operating system running HPE Morpheus Enterprise with required Python and Ansible versions.
+Any operating system running HPE Morpheus Enterprise can be used.
+SUSE Linux Enterprise Server for SAP applications 15 SP7 has been tested in HPE Morpheus Enterprise. Other versions could be used as well.
 
-Python: 3.11 or higher
+| Component | Control Node | Managed Node |
+| --- | --- | --- |
+| Operating System | Any OS | Red Hat Enterprise Linux for SAP Solutions 8.x, 9.x <br>SUSE Linux Enterprise Server for SAP applications 15 SP5, 15 SP6, 15 SP7 and 16.0 |
+| Python | 3.11 or higher | 3.9 or higher |
+| Ansible-Core | 2.18 or higher | N/A |
+| Ansible | 12 or higher | N/A |
 
-Ansible: 9.9.x
+> **Managed Node Registration**<br>
 
-Ansible-core: 2.16.x
+> Operating system do not need to have access to required package repositories or subscription registration at provisioning time, as the VM template being used should contain all required packages.
+ 
+**Additional notes:**
 
-**NOTE: Ansible 10 and ansible-core 2.17.x are not supported, because of breaking changes requiring higher Python version on managed nodes.**
-**NOTE: Due to a security vulnerability CVE-2025-14010, it’s recommended to update ansible to ansible>=12.2.0 
-
-### Managed Nodes
-Operating system:
-- Red Hat Enterprise Linux for SAP Solutions 8.x 9.x (RHEL4SAP)
-- SUSE Linux Enterprise for SAP 15.x
-
-**NOTE: If the Operating system is configured correctly in the VM template, it doesn't need to have access to required package repositories either directly or via subscription registration.**
-
-
-Python: 3.6 or higher
-
+- **Version Compatibility:** For a detailed mapping of supported Python versions and Ansible-Core lifecycles, refer to the official [Ansible-Core Support Matrix](https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html#ansible-core-support-matrix).
+- **Control Node Permissions:** Ensure the user executing the playbooks has the necessary SSH keys and sudo privileges configured for the target environment.
 
 ## Installation Instructions
 
@@ -60,7 +58,6 @@ All included roles can be executed independently.
 | :--- | :--- |
 | [sap_hana_install](https://github.com/HewlettPackard/morpheus-sap-install/blob/main/roles/sap_hana_install/) | Install SAP HANA via HDBLCM |
 | [sap_swpm](https://github.com/HewlettPackard/morpheus-sap-install/blob/main/roles/sap_swpm) | Install SAP Software via SWPM |
-
 
 ## Testing
 This Ansible Collection was tested across different Operating Systems versions, SAP products and scenarios. You can find examples of some of them below.

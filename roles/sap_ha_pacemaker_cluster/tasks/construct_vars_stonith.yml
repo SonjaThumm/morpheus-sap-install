@@ -1,0 +1,170 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+
+# Default STONITH is predefined by platform, but it can be controlled by 'sap_ha_pacemaker_cluster_cluster_properties'.
+
+# Show warning and disable fencing if default STONITH resources are not defined.
+# NOTE: This block will never trigger for default STONITH unless dictionary is missing from platform vars.
+- name: Block when STONITH list is empty
+  when: __sap_ha_pacemaker_cluster_stonith_default | d({}) | length == 0
+  block:
+
+    # Ensure that property 'stonith-enabled' is set to 'false' if no Stonith resources are defined.
+    # STONITH property will be disabled only if 'sap_ha_pacemaker_cluster_cluster_properties' is not defined.
+    - name: "SAP HA Prepare Pacemaker - (STONITH) Set to disabled when no fencing resource is defined"
+      when:
+        - ha_cluster_cluster_properties is not defined  # We cannot append to defined variable due to precedence.
+        - sap_ha_pacemaker_cluster_cluster_properties is not defined  # We cannot append to user defined properties.
+      ansible.builtin.set_fact:
+        __sap_ha_pacemaker_cluster_cluster_properties:
+          "{{ __sap_ha_pacemaker_cluster_cluster_properties | combine({'stonith-enabled': false}) }}"
+
+    - name: "SAP HA Prepare Pacemaker - Warning when no STONITH resources are defined"
+      ansible.builtin.pause:
+        seconds: 5
+        prompt: |
+          WARNING: No STONITH resources are defined and STONITH will be disabled!
+
+          Please configure appropriate fencing resources for your environment by following steps:
+          - Add a STONITH resource(s) using the variable 'sap_ha_pacemaker_cluster_stonith_custom'.
+          - Add a cluster property "stonith-enabled: true" to 'sap_ha_pacemaker_cluster_cluster_properties'.
+
+
+# We will be adding properties only if user defined no custom cluster properties.
+# This enables us to allow even test scenarios, with overrides of cluster properties.
+# NOTE: Reversed combine ensures that OS and platform defaults are retained.
+- name: Block when sap_ha_pacemaker_cluster_cluster_properties is undefined
+  when:
+    - ha_cluster_cluster_properties is not defined  # We cannot append to defined variable due to precedence.
+    - sap_ha_pacemaker_cluster_cluster_properties is not defined  # We cannot append to user defined properties.
+    # Ensure that we do not set it when STONITH resources are not defined.
+    - __sap_ha_pacemaker_cluster_stonith_default | d({}) | length > 0
+  block:
+    ### SAP HANA Scale-Out
+    # TODO: Enable and update during implementation of Scale-Out.
+    # Property 'concurrent-fencing' is 'false' by default, but Scale-Out requires 'true'.
+    # - name: "SAP HA Prepare Pacemaker - Disable concurrent-fencing in properties"
+    #   when:
+    #     - sap_ha_pacemaker_cluster_host_type | select('search', 'hana_scaleout') | length > 0
+    #   ansible.builtin.set_fact:
+    #     __sap_ha_pacemaker_cluster_cluster_properties:
+    #       "{{ {'concurrent-fencing': true} | combine(__sap_ha_pacemaker_cluster_cluster_properties) }}"
+
+    ### SAP HANA Scale-Up
+    # Property 'priority-fencing-delay' is required to ensure proper fencing order.
+    # The value is based on 'pcmk_delay_max', if it is defined in '__sap_ha_pacemaker_cluster_stonith_default'.
+    - name: "SAP HA Prepare Pacemaker - (STONITH) Add priority-fencing-delay property"
+      when:
+        - sap_ha_pacemaker_cluster_host_type | select('search', 'hana_scaleup') | length > 0
+          or sap_ha_pacemaker_cluster_host_type | select('search', 'nwas_.*_ers') | length > 0
+        # Do not set fencing delay if pcmk_delay_max is not defined.
+        # We cannot trust that default 'pcmk_delay_max' will be 15 to ensure rule of
+        # having 'priority-fencing-delay' = 2 * 'pcmk_delay_max'.
+        - __pcmk_delay_max is defined and __pcmk_delay_max | int != 0
+      ansible.builtin.set_fact:
+        __sap_ha_pacemaker_cluster_cluster_properties:
+          "{{ {'priority-fencing-delay': __pcmk_delay_max | int * 2} | combine(__sap_ha_pacemaker_cluster_cluster_properties) }}"
+      vars:
+        __pcmk_delay_max:
+          "{{ (__sap_ha_pacemaker_cluster_stonith_default['instance_attrs'][0]['attrs']
+            | selectattr('name', 'equalto', 'pcmk_delay_max') | first).value }}"
+
+    ### Azure
+    # Ensure that property 'concurrent-fencing' is set to 'true' for Azure.
+    # Source: https://learn.microsoft.com/en-us/azure/sap/workloads/high-availability-guide-suse-pacemaker?tabs=msi#create-a-fencing-device-on-the-pacemaker-cluster
+    # NOTE: Reversed combine ensures that user defined values are retained.
+    - name: "SAP HA Prepare Pacemaker - (STONITH) - MSAZURE VM - Add cluster property 'concurrent-fencing'"
+      when:
+        - __sap_ha_pacemaker_cluster_platform == "cloud_msazure_vm"
+      ansible.builtin.set_fact:
+        __sap_ha_pacemaker_cluster_cluster_properties:
+          "{{ {'concurrent-fencing': true} | combine(__sap_ha_pacemaker_cluster_cluster_properties) }}"
+
+    - name: "SAP HA Prepare Pacemaker - Warning when pcmk_delay_max is missing"
+      when:
+        - __sap_ha_pacemaker_cluster_stonith_default['instance_attrs'][0]['attrs'] | selectattr('name', 'equalto', 'pcmk_delay_max') | length == 0
+      ansible.builtin.debug:
+        msg: |
+          WARNING: The STONITH resource is missing 'pcmk_delay_max'!
+
+          Without a delay, both cluster nodes may attempt to fence each other simultaneously
+          during a split-brain event ("Double STONITH"), leading to a total cluster outage.
+          Add pcmk_delay_max=15 (or similar) to STONITH resource defined in the variable 'sap_ha_pacemaker_cluster_stonith_custom'.
+
+
+# Prepare structure compatible with the variable 'ha_cluster_cluster_properties'.
+- name: "SAP HA Prepare Pacemaker - (STONITH) Define cluster properties"
+  when:
+    - ha_cluster_cluster_properties is not defined  # We cannot append to defined variable due to precedence.
+    - sap_ha_pacemaker_cluster_cluster_properties is not defined  # We cannot append to user defined properties.
+  ansible.builtin.set_fact:
+    __sap_ha_pacemaker_cluster_cluster_properties:
+      - attrs: |-
+          {% set attrs = [] -%}
+          {%- for default_cluster_properties in (__sap_ha_pacemaker_cluster_cluster_properties | dict2items) -%}
+            {% set role_attrs = attrs.extend([
+              {
+                'name': default_cluster_properties.key,
+                'value': default_cluster_properties.value
+              }
+            ]) -%}
+          {%- endfor %}
+          {{ attrs }}
+
+
+# Create list of default stonith resources for all hosts in the cluster
+# and create location constraint for them.
+- name: Block for combining default STONITH resources and creating constraints
+  when:
+    - __sap_ha_pacemaker_cluster_stonith_default | d({}) | length > 0
+  block:
+
+    - name: "SAP HA Prepare Pacemaker - (STONITH) Assemble the resource definition from platform default"
+      ansible.builtin.set_fact:
+        __sap_ha_pacemaker_cluster_stonith_resource:
+          "{{ __sap_ha_pacemaker_cluster_stonith_resource | d([])
+          + [hostvars[stonith_host_item].__sap_ha_pacemaker_cluster_stonith_default] }}"
+      loop: "{{ ansible_play_hosts_all }}"
+      loop_control:
+        loop_var: stonith_host_item
+        label: "{{ stonith_host_item }}"
+      when:
+        - (hostvars[stonith_host_item].__sap_ha_pacemaker_cluster_stonith_default).id
+          not in (__sap_ha_pacemaker_cluster_stonith_resource | d([])| map(attribute='id'))
+
+    # GCP Specific configuration where port contains hostname instead of pcmk_host_map.
+    - name: "SAP HA Prepare Pacemaker - (STONITH) Add location constraints"
+      ansible.builtin.set_fact:
+        __sap_ha_pacemaker_cluster_constraints_location:
+          "{{ __sap_ha_pacemaker_cluster_constraints_location + [__constraint_location_stonith] }}"
+      vars:
+        # get host name from port definition
+        __port_name: "{{ (stonith_item.instance_attrs[0].attrs | selectattr('name', 'equalto', 'port'))[0].value }}"
+        __constraint_location_stonith:
+          resource:
+            id: "{{ stonith_item.id }}"
+          node: "{{ __port_name }}"
+          options:
+            - name: score
+              value: "-INFINITY"
+      loop: "{{ __sap_ha_pacemaker_cluster_stonith_resource }}"
+      loop_control:
+        loop_var: stonith_item
+        label: "{{ stonith_item.id }}"
+      when:
+        # Only apply when a port attribute is defined and contains a name of ansible play hosts.
+        # This is true e.g. for fence_gce.
+        - __port_name is defined
+        - __port_name | length > 0
+        - __port_name in ansible_play_hosts_all
+
+
+# The STONITH resource is an element in the cluster_resource_primitives list
+- name: "SAP HA Prepare Pacemaker - (STONITH) Construct resources definition"
+  when:
+    - __sap_ha_pacemaker_cluster_stonith_resource is defined
+  ansible.builtin.set_fact:
+    __sap_ha_pacemaker_cluster_resource_primitives:
+      "{{ __sap_ha_pacemaker_cluster_resource_primitives
+        + (__sap_ha_pacemaker_cluster_stonith_resource | from_yaml) }}"
+  no_log: true  # stonith resources can contain secrets

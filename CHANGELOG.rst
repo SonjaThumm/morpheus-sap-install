@@ -4,6 +4,24 @@ community.sap\_install Release Notes
 
 .. contents:: Topics
 
+v1.8.1
+======
+
+Release Summary
+---------------
+
+improvements and bug fixes
+
+Bugfixes
+--------
+
+- collection - Update readme formatting to align with galaxy format (https://github.com/sap-linuxlab/community.sap_install/pull/1148)
+- sap*preconfigure - Sync with SAP notes for RHEL 10 (https://github.com/sap-linuxlab/community.sap_install/pull/1161)
+- sap_general_preconfigure - Prevent an accidental change to a lower SELinux mode (https://github.com/sap-linuxlab/community.sap_install/pull/1154)
+- sap_ha_pacemaker_cluster - Add fence_aws for SLES 16 and remove Tech Debt (https://github.com/sap-linuxlab/community.sap_install/pull/1151)
+- sap_hana_install - Revert wrong conditional from PR#1138 (https://github.com/sap-linuxlab/community.sap_install/pull/1147)
+- sap_swpm - Sanitize conditions for 2.19 (https://github.com/sap-linuxlab/community.sap_install/pull/1159)
+
 v1.8.0
 ======
 
