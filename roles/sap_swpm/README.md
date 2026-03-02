@@ -19,11 +19,11 @@ Managed nodes:
 - Ensure that volumes and filesystems are configured correctly.
 
 ### Prepare SAP installation media
-Place a valid SAPCAR executable file in a directory specified by variable `sap_swpm_sapcar_path` (e.g. /software/sapcar). Example: `SAPCAR_1300-70007716.EXE`
 
 Place a valid SWPM SAR file in a directory specified by variable `sap_swpm_swpm_path` (e.g. /software/sap_swpm). Example: `SWPM20SP18_3-80003424.SAR`
 
 Place the following files in a directory specified by variable `sap_swpm_software_path` (e.g. /software/sap_swpm_download_basket):
+
   - For a new installation
       - Download the appropriate software from SAP Software Download Center, Maintenance Planner, etc.
   - For a restore or new installation
@@ -35,6 +35,8 @@ Place the following files in a directory specified by variable `sap_swpm_softwar
       - SAP HANA Client           - `IMDB_CLIENT*SAR`
 
 
+Set the right values for the directories in the Options List of HPE Morpheus Enterprise.
+
 <!-- END Prerequisites -->
 
 ## Execution
@@ -43,7 +45,7 @@ Place the following files in a directory specified by variable `sap_swpm_softwar
 
 <!-- BEGIN Execution Recommended -->
 ### Recommended
-Note: For most scenarios, a database like SAP HANA must be available. Use the role [sap_hana_install](https://github.hpe.com/sonja-thumm/morpheus.sap_install/tree/main/roles/sap_hana_install) for installing the SAP HANA database.
+Note: For most scenarios, a database like SAP HANA must be available. Use the role [sap_hana_install](https://github.com/HewlettPackard/morpheus-sap-install/tree/main/roles/sap_hana_install) for installing the SAP HANA database.
 <!-- END Execution Recommended -->
 
 ### Execution Flow
@@ -70,24 +72,30 @@ Note: For most scenarios, a database like SAP HANA must be available. Use the ro
 
 - At this stage, the role is searching for a sapinst inifile on the managed node, or it will create one:
 
-  - If a file `inifile.params` is located on the managed node in the directory specified in `sap_swpm_inifile_directory`,
-    the role will not create a new one but rather download this file to the control node.
+    - If a file `inifile.params` is located on the managed node in the directory specified in `sap_swpm_inifile_directory`,
+      the role will not create a new one but rather download this file to the control node.
 
-  - If such a file does *not* exist, the role will create an SAP SWPM `inifile.params` file by one of the following methods:
+    - If such a file does *not* exist, the role will create an SAP SWPM `inifile.params` file by one of the following methods:<br>
 
-    Method 1: Predefined sections of the file `inifile_params.j2` will be used to create the file `inifile.params`. The variable `sap_swpm_inifile_sections_list` contains a list of sections which will part of the file `inifile.params`. All other sections will be ignored. The inifile parameters themselves will be set according to other role parameters. Example: The inifile parameter `archives.downloadBasket` will be set to the content of the role parameter `sap_swpm_software_path`.
+        - It is also possible to use method 1 for creating the inifile and then replace or set additional variables using method 2:<br>
+          Define both of the related parameters, `sap_swpm_inifile_sections_list` and `sap_swpm_inifile_parameters_dict`.
 
-    Method 2: The file `inifile.params` will be configured from the content of the dictionary `sap_swpm_inifile_parameters_dict`. This dictionary is defined like in the following example:
+        - Method 1: Predefined sections of the file `inifile_params.j2` will be used to create the file `inifile.params`.<br>
+          The variable `sap_swpm_inifile_sections_list` contains a list of sections which will part of the file `inifile.params`.<br>
+          All other sections will be ignored. The inifile parameters themselves will be set according to other role parameters.<br>
+          Example: The inifile parameter `archives.downloadBasket` will be set to the content of the role parameter `sap_swpm_software_path`.
 
-```
+        - Method 2: The file `inifile.params` will be configured from the content of the dictionary `sap_swpm_inifile_parameters_dict`.<br>
+          This dictionary is defined like in the following example:<br>
+```yaml
 sap_swpm_inifile_parameters_dict:
   archives.downloadBasket: /software/download_basket
   NW_getFQDN.FQDN: example.com
 ```
 
-It is also possible to use method 1 for creating the inifile and then replace or set additional variables using method 2: Define both of the related parameters, `sap_swpm_inifile_sections_list` and `sap_swpm_inifile_parameters_dict`.
-
 - The file `inifile.params` is then transferred to a temporary directory on the managed node, to be used by the sapinst process.
+
+- Check for a previous installation run and discard the existing logfile directory if a previous installation failed before the end of the parameter input phase. Create the installation log directory (customizable via sap_swpm_sapinst_instdir, assigned to group sapinst with optional group ID set via sap_swpm_sapinst_gid) to enable continuation of a failed installation after the input phase.
 
 ### SAP SWPM
 
@@ -114,6 +122,7 @@ Example shows the command line used for the task in HPE Morpheus Enterprise for 
 <!-- BEGIN Role Tags -->
 ### Role Tags
 With the following tags, the role can be called to perform certain activities only:
+
 - tag `sap_swpm_generate_inifile`: Only create the sapinst inifile, without running most of the preinstall steps.
   This can be useful for checking if the inifile is created as desired.
 - tag `sap_swpm_sapinst_commandline`: Only show the sapinst command line.
@@ -136,6 +145,7 @@ Apache 2.0
 ## Role Variables
 <!-- BEGIN Role Variables -->
 **NOTE: Discontinued variables:**
+
 - `sap_swpm_ansible_role_mode`
 
 ### Variables for creating sapinst inifile
@@ -354,9 +364,9 @@ Define DDIC user password in client 000 for new install, or existing for restore
 #### sap_swpm_virtual_hostname
 - _Type:_ `string`
 
-Define virtual hostname when installing High Available instances (e.g. SAP ASCS/ERS cluster).
-The role attempts to resolve `sap_swpm_virtual_hostname` on the managed node, using DNS and /etc/hosts, and will fail
-if this hostname resolution fails. The role will also fail if the IPv4 address for `sap_swpm_virtual_hostname` is
+Define virtual hostname when installing High Available instances (e.g. SAP ASCS/ERS cluster).<br>
+The role attempts to resolve `sap_swpm_virtual_hostname` on the managed node, using DNS and /etc/hosts, and will fail<br>
+if this hostname resolution fails. The role will also fail if the IPv4 address for `sap_swpm_virtual_hostname` is<br>
 not part of the IPv4 addresses of the managed node.
 
 ### Variables specific to SAP HANA Database Installation
@@ -618,61 +628,6 @@ Define to limit number of parallel extraction SAP HANA jobs.
 
 Define password for Diagnostic Agent.
 
-#### sap_swpm_igs_path
-- _Type:_ `string`
-- _Default:_ `{{ sap_swpm_software_path }}`
-
-Define individual path for SAP IGS file. `sap_swpm_software_path` is used by default.
-
-#### sap_swpm_igs_file_name
-- _Type:_ `string`
-
-Define individual name of SAP IGS file. Newest file is auto-detected in `sap_swpm_igs_path`.
-
-#### sap_swpm_igs_helper_path
-- _Type:_ `string`
-- _Default:_ `{{ sap_swpm_software_path }}`
-
-Define individual path for SAP IGS Helper file. `sap_swpm_software_path` is used by default.
-
-#### sap_swpm_igs_helper_file_name
-- _Type:_ `string`
-
-Define individual name of SAP IGS Helper file. Newest file is auto-detected in `sap_swpm_igs_helper_path`.
-
-#### sap_swpm_kernel_dependent_path
-- _Type:_ `string`
-- _Default:_ `{{ sap_swpm_software_path }}`
-
-Define individual path for Database dependent kernel files. `sap_swpm_software_path` is used by default.
-
-#### sap_swpm_kernel_dependent_file_name
-- _Type:_ `string`
-
-Define individual name of Database dependent kernel file. Newest file is auto-detected in `sap_swpm_kernel_dependent_path`.
-
-#### sap_swpm_kernel_independent_path
-- _Type:_ `string`
-- _Default:_ `{{ sap_swpm_software_path }}`
-
-Define individual path for Database independent kernel files. `sap_swpm_software_path` is used by default.
-
-#### sap_swpm_kernel_independent_file_name
-- _Type:_ `string`
-
-Define individual name of Database independent kernel file. Newest file is auto-detected in `sap_swpm_kernel_independent_path`.
-
-#### sap_swpm_web_dispatcher_path
-- _Type:_ `string`
-- _Default:_ `{{ sap_swpm_software_path }}`
-
-Define individual path for SAP Web Dispatcher files. `sap_swpm_software_path` is used by default.
-
-#### sap_swpm_web_dispatcher_file_name
-- _Type:_ `string`
-
-Define individual name of SAP Web Dispatcher file. Newest file is auto-detected in `sap_swpm_web_dispatcher_path`.
-
 #### sap_swpm_fqdn
 - _Type:_ `string`
 
@@ -809,4 +764,18 @@ Set owner for all non-SAPCAR files in `sap_swpm_software_path` and for SWPM*.SAR
 - _Default:_ `root`
 
 Set group ownership for all non-SAPCAR files in `sap_swpm_software_path` and for SWPM*.SAR files in `sap_swpm_swpm_path`.
+
+### sap_swpm_sapinst_instdir
+- _Type:_ `string`
+- _Default:_ `/tmp/sapinst_instdir`
+
+Set the installation log directory used by SWPM.
+
+### sap_swpm_sapinst_gid
+- _Type:_ `string`
+- _Default:_ `(undefined)`
+
+Set the group ID for the sapinst group. If not defined, the group is created with an auto-assigned ID.
+
+
 <!-- END Role Variables -->

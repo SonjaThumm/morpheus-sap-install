@@ -3,7 +3,7 @@
 
 # Ansible does not support streaming of stdout, so we offer a workaround.
 # For more information, see https://github.com/ansible/proposals/issues/92
-- name: Install SAP HANA - Copy file tail-f-hdblcm-install-trc.sh to '{{ __sap_hana_install_register_tmpdir.path }}'
+- name: SAP HANA - Install - Copy file tail-f-hdblcm-install-trc.sh to '{{ __sap_hana_install_register_tmpdir.path }}'
   ansible.builtin.copy:
     src: tmp/tail-f-hdblcm-install-trc.sh
     dest: "{{ __sap_hana_install_register_tmpdir.path }}/tail-f-hdblcm-install-trc.sh"
@@ -11,21 +11,21 @@
     group: root
     mode: '0755'
 
-
-- name: Install SAP HANA - Set fact for the hdblcm verify_signature argument
+- name: SAP HANA - Install - Set fact for the hdblcm verify_signature argument
   ansible.builtin.set_fact:
     __sap_hana_install_fact_verify_signature: '--verify_signature'
   when: sap_hana_install_verify_signature
 
-- name: Install SAP HANA - Set fact for the hdblcm command line
+- name: SAP HANA - Install - Set fact for the hdblcm command line
   ansible.builtin.set_fact:
-    __sap_hana_install_hdblcm_command: "./hdblcm {{ sap_hana_install_hdblcm_extraargs | d('') }}
+    __sap_hana_install_hdblcm_command: >-
+      ./hdblcm {{ sap_hana_install_hdblcm_extraargs | d('') }}
       {{ __sap_hana_install_fact_verify_signature | d('') }}
       --configfile={{ __sap_hana_install_register_tmpdir.path }}/configfile.cfg
-      -b"
+      -b
   tags: sap_hana_install_hdblcm_commandline
 
-- name: Install SAP HANA - Display the hdblcm command line
+- name: SAP HANA - Install - Display the hdblcm command line
   ansible.builtin.debug:
     msg: "SAP HANA install command: '{{ __sap_hana_install_hdblcm_command }}'"
   tags: sap_hana_install_hdblcm_commandline

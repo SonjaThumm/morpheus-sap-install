@@ -29,10 +29,6 @@
         #        name: { role: community.sap_install.sap_install_media_detect }
         #        name: { role: sap_install_media_detect }
 
-    - name: List all variables
-      ansible.builtin.debug:
-        msg: "Directory is {{ sap_swpm_backup_location }}"
-    
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: sap_swpm 

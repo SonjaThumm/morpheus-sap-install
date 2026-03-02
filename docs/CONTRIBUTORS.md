@@ -22,3 +22,7 @@
     - **Steven Stringer** - Developer of Ansible Collection
     - **Marcel Mamula** - SAP solution architect and developer of Ansible Collection
     - **Gabriele Puliti** - Developer of Ansible Collection
+- **HPE**
+    - HPE SAP engineering team
+    - **Sonja Thumm** - Developer of Ansible Collection and integration into HPE Morpheus Enterprise
+    - **Pavan Prathipati** - Developer of python import scripts for HPE Morpheus Enterprise settings
