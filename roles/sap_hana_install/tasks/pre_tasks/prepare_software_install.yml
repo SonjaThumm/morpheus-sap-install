@@ -52,7 +52,7 @@
     group: root
   when:
     - __sap_hana_install_register_stat_software_extract_directory.stat.exists
-    - sap_hana_set_file_permissions
+    - sap_hana_install_set_file_permissions
 
 # In case more than one installation is ongoing and extracting to the same shared directory, wait until the extraction has completed:
 - name: SAP HANA - Install - Pre-Tasks - Suspending if extraction status file '{{ sap_hana_install_software_extract_directory }}/__EXTRACTION_ONGOING__' exists

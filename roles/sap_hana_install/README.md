@@ -500,7 +500,7 @@ The firewall ports are defined in a variable which is compatible with the variab
 The firewall ports for SAP HANA are defined in member `port` of the first field of variable `sap_hana_install_firewall` (`sap_hana_install_firewall[0].port`), see file `defaults/main.yml`.</br>
 If the member `state` is set to `enabled`, the ports will be enabled. If the member `state` is set to `disabled`, the ports will be disabled, which might be useful for testing.</br>
 
-#### sap_hana_set_file_permissions
+#### sap_hana_install_set_file_permissions
 - _Type:_ `bool`
 - _Default:_ `true`
 

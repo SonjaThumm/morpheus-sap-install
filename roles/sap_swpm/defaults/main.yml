@@ -238,10 +238,10 @@ sap_swpm_java_scs_instance_hostname: ''
 sap_swpm_master_password: ''
 
 # Filename of the rootkey backup
-sap_hana_backup_rootkeys_filename:
+sap_hana_backup_rootkeys_filename: '' # noqa: var-naming[no-role-prefix]
 
 # Password for root key encryption
-sap_hana_backup_rootkeys_password:
+sap_hana_backup_rootkeys_password: '' # noqa: var-naming[no-role-prefix]
 
 # New Install - define DDIC 000 password
 # Restore - DDIC 000 password from backup
