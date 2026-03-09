@@ -21,6 +21,7 @@ Bugfixes
 - sap_ha_pacemaker_cluster - Add fence_aws for SLES 16 and remove Tech Debt (https://github.com/sap-linuxlab/community.sap_install/pull/1151)
 - sap_hana_install - Revert wrong conditional from PR#1138 (https://github.com/sap-linuxlab/community.sap_install/pull/1147)
 - sap_swpm - Sanitize conditions for 2.19 (https://github.com/sap-linuxlab/community.sap_install/pull/1159)
+- sap_hana_install - rename sap_hana_set_file_permissions to sap_hana_install_set_file_permissions
 
 v1.8.0
 ======

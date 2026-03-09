@@ -257,4 +257,4 @@ sap_hana_install_create_initial_tenant: 'y'
 sap_hana_install_display_unattended_output: false
 
 # Change the owner, group, and permissions of the files in `sap_hana_install_software_extract_directory`
-sap_hana_set_file_permissions: false
+sap_hana_install_set_file_permissions: false

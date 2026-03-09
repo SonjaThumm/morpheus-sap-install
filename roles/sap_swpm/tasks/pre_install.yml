@@ -328,7 +328,7 @@
   tags: sap_swpm_update_etchosts
 
 ###############
-# Make the installation repeatable 
+# Make the installation repeatable
 ###############
 
 - name: SAP SWPM Pre Install - Set fact for full sapinst instdir path
