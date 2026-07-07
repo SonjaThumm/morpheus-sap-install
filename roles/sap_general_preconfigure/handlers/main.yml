@@ -32,8 +32,10 @@
 - name: "Debug grub-mkconfig BIOS mode"
   ansible.builtin.debug:
     msg: |
-      {{ __sap_general_preconfigure_register_grub2_mkconfig_bios_mode.stdout_lines | d('') }}
-      {{ __sap_general_preconfigure_register_grub2_mkconfig_bios_mode.stderr_lines | d('') }}
+      stdout:
+      {{ __sap_general_preconfigure_register_grub2_mkconfig_bios_mode.stdout | d('') }}
+      stderr:
+      {{ __sap_general_preconfigure_register_grub2_mkconfig_bios_mode.stderr | d('') }}
   listen: __sap_general_preconfigure_regenerate_grub2_conf_handler
   when:
     - not __sap_general_preconfigure_register_stat_sys_firmware_efi.stat.exists
@@ -44,14 +46,14 @@
     __sap_general_preconfigure_uefi_boot_dir: /boot/efi/EFI/redhat/grub.cfg
   listen: __sap_general_preconfigure_regenerate_grub2_conf_handler
   when:
-    - ansible_distribution == 'RedHat'
+    - ansible_facts['distribution'] == 'RedHat'
 
 - name: "Set the grub.cfg location SLES"
   ansible.builtin.set_fact:
     __sap_general_preconfigure_uefi_boot_dir: /boot/efi/EFI/BOOT/grub.cfg
   listen: __sap_general_preconfigure_regenerate_grub2_conf_handler
   when:
-    - ansible_distribution == 'SLES' or ansible_distribution == 'SLES_SAP'
+    - ansible_facts['distribution'] == 'SLES' or ansible_facts['distribution'] == 'SLES_SAP'
 
 - name: "Run grub-mkconfig (UEFI mode)"
   ansible.builtin.command:
@@ -67,8 +69,10 @@
 - name: "Debug grub-mkconfig UEFI"
   ansible.builtin.debug:
     msg: |
-      {{ __sap_general_preconfigure_register_grub2_mkconfig_uefi_mode.stdout_lines | d('') }}
-      {{ __sap_general_preconfigure_register_grub2_mkconfig_uefi_mode.stderr_lines | d('') }}
+      stdout:
+      {{ __sap_general_preconfigure_register_grub2_mkconfig_uefi_mode.stdout | d('') }}
+      stderr:
+      {{ __sap_general_preconfigure_register_grub2_mkconfig_uefi_mode.stderr | d('') }}
   listen: __sap_general_preconfigure_regenerate_grub2_conf_handler
   when:
     - __sap_general_preconfigure_register_stat_sys_firmware_efi.stat.exists
@@ -93,7 +97,7 @@
   timeout: 30
   listen: __sap_general_preconfigure_reboot_handler
   when:
-    - ansible_os_family == 'Suse'
+    - ansible_facts['os_family'] == 'Suse'
     - sap_general_preconfigure_reboot_ok | d(false)
   changed_when: false
 
@@ -139,5 +143,9 @@
 
 - name: Show the result of df -h /dev/shm
   ansible.builtin.debug:
-    var: __sap_general_preconfigure_command_df_shm_result.stdout_lines, __sap_general_preconfigure_command_df_shm_result.stderr_lines
+    msg: |
+      stdout:
+      {{ __sap_general_preconfigure_command_df_shm_result.stdout | d('') }}
+      stderr:
+      {{ __sap_general_preconfigure_command_df_shm_result.stderr | d('') }}
   listen: __sap_general_preconfigure_mount_tmpfs_handler

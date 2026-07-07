@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+---
+# Requirement to enable the fencing resource to function.
+#
+# TODO: firewall config for the LB health probe port

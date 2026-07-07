@@ -4,6 +4,65 @@ community.sap\_install Release Notes
 
 .. contents:: Topics
 
+v1.9.2
+======
+
+Release Summary
+---------------
+
+improvements and bug fixes
+
+Bugfixes
+--------
+
+- sap_ha_pacemaker_cluster - Fix issue 1203 sudo dash (https://github.com/sap-linuxlab/community.sap_install/pull/1204)
+- sap_storage_setup - Add option to mount generic NFS mounts (https://github.com/sap-linuxlab/community.sap_install/pull/1205)
+- sap_swpm - Remove ansible.posix dependency (https://github.com/sap-linuxlab/community.sap_install/pull/1202)
+
+v1.9.1
+======
+
+Release Summary
+---------------
+
+improvements and bug fixes
+
+Bugfixes
+--------
+
+- sap_general_preconfigure - Ansible 2.24 compatibility (https://github.com/sap-linuxlab/community.sap_install/pull/1183)
+- sap_ha_pacemaker_cluster - Ansible 2.24 compatibility (https://github.com/sap-linuxlab/community.sap_install/pull/1194)
+- sap_hana_preconfigure - Ansible 2.24 compatibility (https://github.com/sap-linuxlab/community.sap_install/pull/1185)
+- sap_hana_preconfigure/RHEL - Correctly set tsx in all cases (https://github.com/sap-linuxlab/community.sap_install/pull/1197)
+- sap_maintain_etc_hosts, sap_hana_install, sap_install_media_detect - Ansible 2.24 compatibility (https://github.com/sap-linuxlab/community.sap_install/pull/1191)
+- sap_netweaver_preconfigure - Ansible 2.24 compatibility (https://github.com/sap-linuxlab/community.sap_install/pull/1184)
+- sap_storage_setup, sap_hostagent, anydb - Ansible 2.24 compatibility (https://github.com/sap-linuxlab/community.sap_install/pull/1193)
+
+v1.9.0
+======
+
+Release Summary
+---------------
+
+improvements and bug fixes with a focus on firewall support
+
+Minor Changes
+-------------
+
+- sap_ha_install_hana_hsr - inventory vs. hostname (https://github.com/sap-linuxlab/community.sap_install/pull/1177)
+- sap_ha_pacemaker_cluster - Add firewall steps (https://github.com/sap-linuxlab/community.sap_install/pull/1170)
+- sap_ha_pacemaker_cluster - Split off HANA pre_tasks from include_vars and add new force mode (https://github.com/sap-linuxlab/community.sap_install/pull/1173)
+- sap_swpm - Update firewall steps (https://github.com/sap-linuxlab/community.sap_install/pull/1168)
+
+Bugfixes
+--------
+
+- collection - No longer use var debug with more than one variable (https://github.com/sap-linuxlab/community.sap_install/pull/1178)
+- sap_ha_pacemaker_cluster - (fix) align settings to HANA documentation (https://github.com/sap-linuxlab/community.sap_install/pull/1179)
+- sap_hana_install - Fix hana versions mismatch and replace injected vars (https://github.com/sap-linuxlab/community.sap_install/pull/1167)
+- sap_swpm - Only ensure the presence of the 'file' package on Suse (https://github.com/sap-linuxlab/community.sap_install/pull/1166)
+- sap_swpm - Rename all vars which contain '_swpm_swpm' (https://github.com/sap-linuxlab/community.sap_install/pull/1172)
+
 v1.8.1
 ======
 

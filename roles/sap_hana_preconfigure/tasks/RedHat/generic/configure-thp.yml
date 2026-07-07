@@ -16,7 +16,7 @@
     __sap_hana_preconfigure_fact_thp: "{{ __sap_hana_preconfigure_boot_command_line_args['thp']['args'][0].split('=')[1] }}"
   when:
     - __sap_hana_preconfigure_boot_command_line_args['thp']['arch'] is defined
-    - ansible_architecture in __sap_hana_preconfigure_boot_command_line_args['thp']['arch']
+    - ansible_facts['architecture'] in __sap_hana_preconfigure_boot_command_line_args['thp']['arch']
     - sap_hana_preconfigure_thp is undefined
       or not sap_hana_preconfigure_thp is string
       or sap_hana_preconfigure_thp | length == 0
@@ -27,7 +27,7 @@
       or
       (
         __sap_hana_preconfigure_boot_command_line_args['thp']['arch'] is defined and
-        ansible_architecture in __sap_hana_preconfigure_boot_command_line_args['thp']['arch']
+        ansible_facts['architecture'] in __sap_hana_preconfigure_boot_command_line_args['thp']['arch']
       )
   block:
 
@@ -58,5 +58,7 @@
     - name: Display the status of THP
       ansible.builtin.debug:
         msg: |
-          {{ __sap_hana_preconfigure_register_thp_status.stdout_lines | d('') }}
-          {{ __sap_hana_preconfigure_register_thp_status.stderr_lines | d('') }}
+          stdout:
+          {{ __sap_hana_preconfigure_register_thp_status.stdout | d('') }}
+          stderr:
+          {{ __sap_hana_preconfigure_register_thp_status.stderr | d('') }}

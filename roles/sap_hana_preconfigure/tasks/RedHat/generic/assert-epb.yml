@@ -5,7 +5,7 @@
 #   in included tuned profile throughput-performance
 # More details on EPB are in: https://github.com/torvalds/linux/blob/be1fcde604e429691771ce70230668af8097e29b/arch/x86/kernel/cpu/intel_epb.c
 - name: Assert - Perform steps for checking EPB
-  when: ansible_architecture == 'x86_64' and
+  when: ansible_facts['architecture'] == 'x86_64' and
         (not sap_hana_preconfigure_use_tuned or
            sap_hana_preconfigure_assert_all_config)
   block:
@@ -19,8 +19,11 @@
 
     - name: Assert - Display the output of the cpupower info command
       ansible.builtin.debug:
-        var: __sap_hana_preconfigure_register_cpupower_info_epb_supported_assert.stdout_lines,
-             __sap_hana_preconfigure_register_cpupower_info_epb_supported_assert.stderr_lines
+        msg: |
+          stdout:
+          {{ __sap_hana_preconfigure_register_cpupower_info_epb_supported_assert.stdout | d('') }}
+          stderr:
+          {{ __sap_hana_preconfigure_register_cpupower_info_epb_supported_assert.stderr | d('') }}
 
     - name: Check EPB if possible (x86_64 platform only)
       when: "__sap_hana_preconfigure_register_cpupower_info_epb_supported_assert.stdout != 'does not support'"
@@ -78,7 +81,11 @@
 
         - name: Assert - Display the output of the cpupower info command again
           ansible.builtin.debug:
-            var: __sap_hana_preconfigure_register_cpupower_info_epb_assert
+            msg: |
+              stdout:
+              {{ __sap_hana_preconfigure_register_cpupower_info_epb_assert.stdout | d('') }}
+              stderr:
+              {{ __sap_hana_preconfigure_register_cpupower_info_epb_assert.stderr | d('') }}
 
         - name: Assert that the current setting of EPB is '0' (x86_64 platform only)
           ansible.builtin.assert:
