@@ -59,4 +59,3 @@ sap_swpm_software_extract_directory: "{{ sap_swpm_swpm_path }}"
 
 #sap_install_media_detect_create_target_directory
 sap_swpm_update_etchosts: false
-

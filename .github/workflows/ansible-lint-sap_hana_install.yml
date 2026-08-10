@@ -17,6 +17,9 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   ansible-lint:
     runs-on: ubuntu-latest

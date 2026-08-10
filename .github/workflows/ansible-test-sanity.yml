@@ -4,6 +4,9 @@
 
 name: Ansible Test - Sanity
 
+permissions:
+  contents: read
+
 on:
   schedule:
     # This is 01:05 UTC, which is 3:05 AM in Prague/CEST

@@ -19,7 +19,6 @@ Managed nodes:
 - Ensure that volumes and filesystems are configured correctly.
 
 ### Prepare SAP installation media
-Place a valid SAPCAR executable file in a directory specified by variable `sap_swpm_sapcar_path` (e.g. /software/sapcar). Example: `SAPCAR_1300-70007716.EXE`
 
 Place a valid SWPM SAR file in a directory specified by variable `sap_swpm_swpm_path` (e.g. /software/sap_swpm). Example: `SWPM20SP18_3-80003424.SAR`
 
@@ -34,6 +33,10 @@ Place the following files in a directory specified by variable `sap_swpm_softwar
       - SAP Kernel DB             - `SAPEXEDB_*SAR`
       - SAP Kernel DB Independent - `SAPEXE_*SAR`
       - SAP HANA Client           - `IMDB_CLIENT*SAR`
+
+Set the right values for the directories in the Options List of HPE Morpheus Enterprise.
+
+Set the right values for the directories in the Options List of HPE Morpheus Enterprise.
 
 <!-- END Prerequisites -->
 

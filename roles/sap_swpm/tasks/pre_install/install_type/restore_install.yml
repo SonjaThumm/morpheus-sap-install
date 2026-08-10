@@ -9,8 +9,8 @@
 
 # Check if the backup directory is mounted
 - name: SAP SWPM Pre Install - Define the search for a mountpoint
-  set_fact:
-    find_mount_point_script: |
+  ansible.builtin.set_fact:
+    sap_swpm_find_mount_point_script: |
       path="{{ sap_swpm_backup_location }}"
       while [ "$path" != "/" ]; do
         if mount | grep -q "on $path "; then
@@ -22,7 +22,7 @@
 
 - name: SAP SWPM Pre Install - Find the mount point for the backup location - {{ sap_swpm_backup_location }}
   ansible.builtin.command:
-    cmd: /bin/bash -c '{{ find_mount_point_script }}'
+    cmd: /bin/bash -c '{{ sap_swpm_find_mount_point_script }}'
   register: _sap_swpm_backup_location_mount_point
   failed_when: false  # Do not fail if no mount point is found
   changed_when: false  # This is a check, so it should not mark the task as changed

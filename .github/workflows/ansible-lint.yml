@@ -1,6 +1,9 @@
 ---
 name: Ansible Lint - Collection
 
+permissions:
+  contents: read
+
 on:
   schedule:
     # This is 03:05 UTC, which is 5:05 AM in Prague/CEST.

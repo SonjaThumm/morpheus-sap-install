@@ -1,6 +1,9 @@
 ---
 name: CodeSpell
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:

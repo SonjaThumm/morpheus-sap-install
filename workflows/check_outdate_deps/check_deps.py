@@ -38,7 +38,7 @@ def __build_packages_dict_from_file():
 def __build_packages_dict_from_output(output):
     print("INFO: create dictionary from output")
     packages = {}
-    lines = output.splitlines(output)
+    lines = output.splitlines()
     for line in lines:
         regex_pattern = re.compile(
             r"([a-zA-Z0-9-]+)\ +([0-9]+\.[0-9]+\.[0-9]+)\ +([0-9]+\.[0-9]+\.[0-9]+)\ +([a-zA-Z]+)")
@@ -57,14 +57,33 @@ def __create_branch(branch, branch_data):
         data=json.dumps(branch_data))
     if response.status_code == 201:
         print(f"INFO: Branch created -> https://github.com/{REPOSITORY}/tree/{branch}")
+        return True
     else:
-        print(f"ERROR: Failed to create branch. Status code: {response.status_code}.")
+        print(
+            f"ERROR: Failed to create branch. Status code: {response.status_code}. Response: {response.text}")
+        return False
 
 
 def __search_issues(query):
     response = requests.get(
-        "https://api.github.com/search/issues", params={"q": query})
-    return response.json()['items']
+        "https://api.github.com/search/issues",
+        headers=HEADERS,
+        params={"q": query})
+    try:
+        response_json = response.json()
+    except ValueError:
+        response_json = {"raw_response": response.text}
+
+    if response.status_code != 200:
+        print(
+            f"ERROR: Failed to search issues. Status code: {response.status_code}. Response: {response_json}")
+        return []
+
+    items = response_json.get('items') if isinstance(response_json, dict) else None
+    if not isinstance(items, list):
+        print(f"ERROR: Unexpected search issues response payload: {response_json}")
+        return []
+    return items
 
 
 def __create_issue(issue_data):
@@ -174,12 +193,18 @@ def find_replace_in_file(file_path, find_str, replace_str):
 
 
 def create_branch_if_not_exists(branch, commit_sha):
-    response = requests.get(f"https://api.github.com/repos/{REPOSITORY}/branches/{branch}")
+    response = requests.get(
+        f"https://api.github.com/repos/{REPOSITORY}/branches/{branch}",
+        headers=HEADERS)
     if response.status_code == 404:
         branch_data = {"ref": "refs/heads/" + branch, "sha": commit_sha}
-        __create_branch(branch, branch_data)
-    else:
+        if not __create_branch(branch, branch_data):
+            print(f"ERROR: Could not ensure branch exists: {branch}")
+    elif response.status_code == 200:
         print(f"INFO: Branch -> https://github.com/{REPOSITORY}/tree/{branch}")
+    else:
+        print(
+            f"ERROR: Failed to check branch. Status code: {response.status_code}. Response: {response.text}")
 
 
 def open_issue_for_package(package, current_version, latest_version):
