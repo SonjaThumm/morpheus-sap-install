@@ -40,7 +40,6 @@ For specific role maintainers, see the `README.md` file in the corresponding rol
 | Roberto Nozaki | 6 | 116 | 2024-03-09 |
 | Sjoerd Lubbers | 4 | 21 | 2025-04-16 |
 | Bruno Doser | 4 | 218 | 2023-12-04 |
-| SunnyCrockett | 3 | 6 | 2025-03-17 |
 | Alexander Wilke | 2 | 10 | 2024-11-14 |
 | remi.mrozek | 2 | 7 | 2024-07-29 |
 | Irina Gulina | 2 | 145 | 2024-01-03 |
