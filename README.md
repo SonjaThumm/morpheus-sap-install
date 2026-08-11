@@ -1,5 +1,6 @@
 # Ansible SAP installation playbooks for HPE Morpheus Enterprise
 
+> ⚠️ **Breaking Change:** Starting with version 1.9.2, this repository requires the `community.sap_install` Ansible Galaxy collection to be installed on the HPE Morpheus Enterprise node. See [Installation](#installation) for the required command.
 
 ## Description
 
@@ -50,6 +51,39 @@ The Morpheus_Import_Package.zip archive contains a Python script that imports Wo
 
 A detailed description of how to setup HPE Morpheus Enterprise and how to customize the imported Workflows and Layouts is available in [HPE Reference Architecture for SAP automation with HPE Morpheus Enterprise Software on Predefined Configuration and VMware virtualization](https://www.hpe.com/psnow/doc/a50014106enw)
 
+> **Note:** Starting with version 1.9.2, installing the `community.sap_install` Ansible Galaxy collection into the HPE Morpheus Enterprise collections path is required for the roles in this repository to work correctly.
+
+For the usage of the playbooks in this repository in HPE Morpheus Enterprise, the collection must be installed into the Ansible collections path used by HPE Morpheus Enterprise, using the `-p` (path) parameter. For compatibility, use the community version 1.9.2:
+
+```
+ansible-galaxy collection install community.sap_install:1.9.2 -p /opt/morpheus/.local/.ansible/collections
+```
+
+Optionally you can include the collection in a requirements.yml file and install it together with other collections using `ansible-galaxy collection install -r requirements.yml -p /opt/morpheus/.local/.ansible/collections`. The requirements file needs to be maintained in the following format:
+
+```
+collections:
+  - name: community.sap_install
+```
+
+### Upgrade
+Installed Ansible Collection will not be upgraded automatically when Ansible package is upgraded.
+
+To upgrade the collection to the latest available version, run the following command, using the same `-p` path parameter as during installation together with `--force` to ensure the existing collection at that path is overwritten:
+
+```
+ansible-galaxy collection install community.sap_install -p /opt/morpheus/.local/.ansible/collections --force
+```
+
+You can also install a specific version of the collection:
+
+```
+ansible-galaxy collection install community.sap_install:1.9.2 -p /opt/morpheus/.local/.ansible/collections
+```
+
+See [Installing collections](https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html) for more details on installation methods.
+
+
 ## Use Cases
 
 ### Example Scenarios
@@ -98,3 +132,4 @@ More information on how to execute Ansible playbooks is in [Getting started guid
 
 ## License
 [Apache 2.0](https://github.com/HewlettPackard/morpheus-sap-install/blob/main/LICENSE) 
+
